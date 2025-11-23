@@ -24,7 +24,7 @@ def call(Map config = [:]) {
         """
         
         // Update deployment manifests with new image tags - using proper Linux sed syntax
-        sh """
+        bat """
             # Update main application deployment - note the correct image name is trainwithshubham/easyshop-app
             sed -i "s|image: trainwithshubham/easyshop-app:.*|image: trainwithshubham/easyshop-app:${imageTag}|g" ${manifestsPath}/08-easyshop-deployment.yaml
             
