@@ -1,17 +1,17 @@
 def call(Map config = [:]) {
-    def imageName = config.imageName ?: error("Image name is required")
-    def imageTag = config.imageTag ?: 'latest'
-    def credentials = config.credentials ?: 'docker-hub-credentials'
-    
+    def imageName   = config.imageName                    // e.g. "myuser/backend"
+    def imageTag    = config.imageTag    ?: 'latest'
+    def credentials = config.credentials ?: 'dockerHubLogin'   // ← match your Jenkins credential ID
+
     echo "Pushing Docker image: ${imageName}:${imageTag}"
-    
+
     withCredentials([usernamePassword(
         credentialsId: credentials,
-        usernameVariable: 'DOCKER_USERNAME',
-        passwordVariable: 'DOCKER_PASSWORD'
+        usernameVariable: 'DOCKER_USER',
+        passwordVariable: 'DOCKER_PASS'
     )]) {
         bat """
-            echo "\$DOCKER_PASSWORD" | docker login -u "\$DOCKER_USERNAME" --password-stdin
+            echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
             docker push ${imageName}:${imageTag}
             docker push ${imageName}:latest
         """
