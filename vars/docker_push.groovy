@@ -20,8 +20,6 @@ def call(Map config = [:]) {
             
             docker push ${fullImage}:${imageTag}
             docker push ${fullImage}:latest
-            
-            docker rmi ${imageName}:${imageTag} ${fullImage}:${imageTag} ${fullImage}:latest
-        """
+                    """
     }
 }
