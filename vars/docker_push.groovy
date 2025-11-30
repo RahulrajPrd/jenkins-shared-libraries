@@ -12,6 +12,7 @@ def call(Map config = [:]) {
     )]) {
         bat """
             echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+            docker image tag ${imageName}:${imageTag} ${env.dockerHubUser}/${imageName}:${imageTag}
             docker push ${imageName}:${imageTag}
             docker push ${imageName}:latest
         """
