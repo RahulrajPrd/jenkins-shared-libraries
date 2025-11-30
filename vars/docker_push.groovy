@@ -1,9 +1,11 @@
+// vars/docker_push.groovy
 def call(Map config = [:]) {
-    def imageName   = config.imageName                    // e.g. "myuser/backend"
+    def imageName   = config.imageName.split('/').last()   // "backend" from "rahulrajprd/backend"
+    def fullImage   = config.imageName                     // "rahulrajprd/backend"
     def imageTag    = config.imageTag    ?: 'latest'
-    def credentials = config.credentials ?: 'dockerHubLogin'   // ← match your Jenkins credential ID
+    def credentials = config.credentials ?: 'dockerHubLogin'
 
-    echo "Pushing Docker image: ${imageName}:${imageTag}"
+    echo "Pushing Docker image: ${fullImage}:${imageTag}"
 
     withCredentials([usernamePassword(
         credentialsId: credentials,
@@ -12,10 +14,14 @@ def call(Map config = [:]) {
     )]) {
         bat """
             echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
-            docker image tag ${imageName}:${imageTag} ${env.dockerHubUser}/${imageName}:${imageTag}
-            docker push ${env.dockerHubUser}/${imageName}:${imageTag}
-
-            docker rmi ${imageName}:${imageTag}
+            
+            docker tag ${imageName}:${imageTag} ${fullImage}:${imageTag}
+            docker tag ${imageName}:${imageTag} ${fullImage}:latest
+            
+            docker push ${fullImage}:${imageTag}
+            docker push ${fullImage}:latest
+            
+            docker rmi ${imageName}:${imageTag} ${fullImage}:${imageTag} ${fullImage}:latest
         """
     }
 }
